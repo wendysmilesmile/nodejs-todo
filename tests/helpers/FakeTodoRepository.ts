@@ -15,7 +15,8 @@ export class FakeTodoRepository implements ITodoRepository {
   
 
   async getAll(): Promise<TodoItem[]> {
-    return [...this.items];
+    const filteredItems = this.items.filter((item) => !item.isDeleted);
+    return filteredItems;
   }
 
   async findById(id: number): Promise<TodoItem | null> {

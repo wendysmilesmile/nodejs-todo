@@ -1,9 +1,12 @@
 import request from "supertest";
 import { createApp } from "../src/app";
+import { PostgresTodoRepository } from "../src/repositories/PostgresTodoRepository";
+import { getPostgresPool } from "../src/db/postgresPool";
 import { FakeTodoRepository } from "./helpers/FakeTodoRepository";
 
 describe("Todo API", () => {
   const createTestApp = () => {
+    // const repository = new PostgresTodoRepository(getPostgresPool());
     const repository = new FakeTodoRepository();
     return createApp({ todoRepository: repository });
   };
