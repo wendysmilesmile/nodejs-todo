@@ -47,6 +47,8 @@ export function createTodoController(todoService: ITodoService): Router {
 
   router.get("/api/todo-item/search", async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // const user = req.user;
+      // const userId = user?.email ?? "anonymous";
       const query = req.query?.q as string | undefined;
       if (!query) {
         return res.status(400).json({ message: "Query parameter 'q' is required." });

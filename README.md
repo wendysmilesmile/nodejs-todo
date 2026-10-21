@@ -59,6 +59,12 @@ npm install
 
 ## Development Run
 
+Create local env file first:
+
+```bash
+cp .env.example .env
+```
+
 ```bash
 npm run dev
 ```
@@ -70,6 +76,7 @@ Required environment variables (defaults shown):
 - `PG_USER` (`postgres`)
 - `PG_PASSWORD` (`postgres`)
 - `PG_DATABASE` (`todoservice`)
+- `JWT_SECRET` (`change-me-in-local-and-prod`)
 
 ## Build + Production Run
 
