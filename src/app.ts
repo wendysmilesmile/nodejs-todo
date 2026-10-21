@@ -3,8 +3,8 @@ import express, { NextFunction, Request, Response } from "express";
 import { createTodoController } from "./controllers/todoController";
 import { createTodoBffController } from "./controllers/todoBffController";
 import { ITodoRepository } from "./repositories/interfaces/ITodoRepository";
-import { PostgresTodoRepository } from "./repositories/PostgresTodoRepository";
-import { TodoService } from "./services/TodoService";
+import { createPostgresTodoRepository } from "./repositories/PostgresTodoRepository";
+import { createTodoService } from "./services/TodoService";
 import { HttpError } from "./types/httpError";
 import { adapters } from "./adapters";
 import { getPostgresPool } from "./db/postgresPool";
@@ -42,8 +42,8 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction) {
 export function createApp(options: CreateAppOptions = {}) {
   const app = express();
 
-  const repository = options.todoRepository ?? new PostgresTodoRepository(getPostgresPool());
-  const todoService = new TodoService(repository);
+  const repository = options.todoRepository ?? createPostgresTodoRepository(getPostgresPool());
+  const todoService = createTodoService(repository);
 
   app.use(express.json());
   app.use(authMiddleware);

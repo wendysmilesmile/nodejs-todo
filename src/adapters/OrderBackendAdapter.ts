@@ -5,13 +5,17 @@ export interface RemoteOrder {
   amount: number;
 }
 
-export class OrderBackendAdapter {
-  constructor(private readonly webClient: WebClient) {}
+export interface OrderBackendAdapter {
+  listOrders(): Promise<RemoteOrder[]>;
+}
 
-  listOrders(): Promise<RemoteOrder[]> {
-    return this.webClient.request<RemoteOrder[]>({
-      method: "GET",
-      path: "/api/orders"
-    });
-  }
+export function createOrderBackendAdapter(webClient: WebClient): OrderBackendAdapter {
+  return {
+    listOrders(): Promise<RemoteOrder[]> {
+      return webClient.request<RemoteOrder[]>({
+        method: "GET",
+        path: "/api/orders"
+      });
+    }
+  };
 }

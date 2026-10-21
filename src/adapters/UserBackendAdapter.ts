@@ -5,13 +5,17 @@ export interface RemoteUser {
   name: string;
 }
 
-export class UserBackendAdapter {
-  constructor(private readonly webClient: WebClient) {}
+export interface UserBackendAdapter {
+  listUsers(): Promise<RemoteUser[]>;
+}
 
-  listUsers(): Promise<RemoteUser[]> {
-    return this.webClient.request<RemoteUser[]>({
-      method: "GET",
-      path: "/api/users"
-    });
-  }
+export function createUserBackendAdapter(webClient: WebClient): UserBackendAdapter {
+  return {
+    listUsers(): Promise<RemoteUser[]> {
+      return webClient.request<RemoteUser[]>({
+        method: "GET",
+        path: "/api/users"
+      });
+    }
+  };
 }

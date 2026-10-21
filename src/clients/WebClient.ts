@@ -7,53 +7,41 @@ export interface RequestOptions {
   timeoutMs?: number;
 }
 
-export class HttpResponseError extends Error {
-  constructor(
-    public readonly status: number,
-    public readonly responseBody: unknown,
-    message = `HTTP request failed with status ${status}`
-  ) {
-    super(message);
-  }
+export interface HttpResponseError extends Error {
+  status: number;
+  responseBody: unknown;
 }
 
-export class WebClient {
-  constructor(
-    private readonly baseUrl: string,
-    private readonly defaultHeaders: Record<string, string> = {}
-  ) {}
+export interface WebClient {
+  request<T>(options: RequestOptions): Promise<T>;
+}
 
-  async request<T>(options: RequestOptions): Promise<T> {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? 5000);
+export function createHttpResponseError(
+  status: number,
+  responseBody: unknown,
+  message = `HTTP request failed with status ${status}`
+): HttpResponseError {
+  const error = new Error(message) as HttpResponseError;
+  error.status = status;
+  error.responseBody = responseBody;
+  return error;
+}
 
-    try {
-      const url = this.buildUrl(options.path, options.query);
-      const response = await fetch(url, {
-        method: options.method ?? "GET",
-        headers: {
-          "content-type": "application/json",
-          ...this.defaultHeaders,
-          ...options.headers
-        },
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
-        signal: controller.signal
-      });
+export function isHttpResponseError(error: unknown): error is HttpResponseError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    "responseBody" in error
+  );
+}
 
-      const responseBody = await this.parseBody(response);
-
-      if (!response.ok) {
-        throw new HttpResponseError(response.status, responseBody);
-      }
-
-      return responseBody as T;
-    } finally {
-      clearTimeout(timeout);
-    }
-  }
-
-  private buildUrl(path: string, query?: RequestOptions["query"]): string {
-    const url = new URL(path, this.baseUrl);
+export function createWebClient(
+  baseUrl: string,
+  defaultHeaders: Record<string, string> = {}
+): WebClient {
+  const buildUrl = (path: string, query?: RequestOptions["query"]): string => {
+    const url = new URL(path, baseUrl);
 
     if (query) {
       Object.entries(query).forEach(([key, value]) => {
@@ -64,9 +52,9 @@ export class WebClient {
     }
 
     return url.toString();
-  }
+  };
 
-  private async parseBody(response: Response): Promise<unknown> {
+  const parseBody = async (response: Response): Promise<unknown> => {
     const contentType = response.headers.get("content-type") ?? "";
 
     if (contentType.includes("application/json")) {
@@ -75,5 +63,36 @@ export class WebClient {
 
     const text = await response.text();
     return text.length > 0 ? text : null;
-  }
+  };
+
+  return {
+    async request<T>(options: RequestOptions): Promise<T> {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), options.timeoutMs ?? 5000);
+
+      try {
+        const url = buildUrl(options.path, options.query);
+        const response = await fetch(url, {
+          method: options.method ?? "GET",
+          headers: {
+            "content-type": "application/json",
+            ...defaultHeaders,
+            ...options.headers
+          },
+          body: options.body === undefined ? undefined : JSON.stringify(options.body),
+          signal: controller.signal
+        });
+
+        const responseBody = await parseBody(response);
+
+        if (!response.ok) {
+          throw createHttpResponseError(response.status, responseBody);
+        }
+
+        return responseBody as T;
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+  };
 }

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { DownstreamAdapters } from "../adapters/DownstreamFactory";
-import { HttpResponseError } from "../clients/WebClient";
+import { isHttpResponseError } from "../clients/WebClient";
 
 export function createTodoBffController(adapters: DownstreamAdapters): Router {
   const router = Router();
@@ -10,7 +10,7 @@ export function createTodoBffController(adapters: DownstreamAdapters): Router {
       const items = await adapters.todo.listTodos();
       res.status(200).json(items);
     } catch (error) {
-      if (error instanceof HttpResponseError) {
+      if (isHttpResponseError(error)) {
         return res.status(502).json({
           message: "Downstream todo service failed.",
           downstreamStatus: error.status,
@@ -36,7 +36,7 @@ export function createTodoBffController(adapters: DownstreamAdapters): Router {
         orders
       });
     } catch (error) {
-      if (error instanceof HttpResponseError) {
+      if (isHttpResponseError(error)) {
         return res.status(502).json({
           message: "Downstream service failed.",
           downstreamStatus: error.status,

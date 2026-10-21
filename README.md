@@ -16,7 +16,7 @@ A demo Express Web API for managing a todo list with PostgreSQL storage.
 Repository layer:
 
 - `ITodoRepository` (interface)
-- `BaseTodoRepository` (abstract base)
+- `BaseTodoRepository` (type alias)
 - `PostgresTodoRepository` (concrete repository)
 
 Service layer:
