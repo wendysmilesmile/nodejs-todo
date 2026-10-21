@@ -1,0 +1,15 @@
+services:
+  todoservice:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/todoservice-node:latest
+    container_name: todoservice-node
+    restart: always
+    ports:
+      - "8080:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - PG_HOST=${PG_HOST}
+      - PG_PORT=${PG_PORT:-5432}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_DATABASE=${PG_DATABASE}
