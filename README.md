@@ -8,33 +8,28 @@ A demo Express Web API for managing a todo list with PostgreSQL storage.
 - Add a new todo item
 - Soft-delete a todo item (`isDeleted = true`)
 - Layered architecture: Controller -> Service -> Repository
-- TypeScript interface + concrete implementation
+- Function-based modules (no class-based service/repository)
 - Async/await from controller to repository
+- SQL migrations managed by db-migrate
 
 ## Architecture (as requested)
 
-Repository layer:
-
-- `ITodoRepository` (interface)
-- `BaseTodoRepository` (type alias)
-- `PostgresTodoRepository` (concrete repository)
-
-Service layer:
-
-- `TodoService` (exported functions)
+- `app.ts`: Express app wiring, middleware, router mounting
+- `controllers/todoController.ts`: todo HTTP handlers
+- `services/TodoService.ts`: business logic exported as functions
+- `repositories/PostgresTodoRepository.ts`: PostgreSQL queries
+- `db/postgresPool.ts`: shared PostgreSQL pool
+- `migrations/`: db-migrate migration files (JS + timestamped SQL)
 
 ## Project Structure
 
-- `src/app.ts` - app wiring (DI-style composition root)
+- `src/app.ts` - app wiring and middleware
 - `src/controllers/todoController.ts` - HTTP routes
-- `src/repositories/interfaces/ITodoRepository.ts`
-- `src/repositories/base/BaseTodoRepository.ts`
 - `src/repositories/PostgresTodoRepository.ts`
 - `src/db/postgresPool.ts`
 - `src/services/TodoService.ts`
-- `src/clients/WebClient.ts` - unified outbound HTTP client
-- `src/adapters/TodoBackendAdapter.ts` - downstream service adapter example
-- `src/adapters/index.ts` - adapter wiring (BFF style)
+- `src/clients/WebClient.ts` - outbound HTTP client helper
+- `src/adapters/OrderBackendAdapter.ts` - simple adapter function example
 - `tests/todo.api.test.ts` - API tests
 
 ## API Endpoints
@@ -43,6 +38,19 @@ Service layer:
 - `POST /api/todo-item`
 - `PATCH /api/todo-item/{id}`
 - `DELETE /api/todo-item/{id}`
+- `GET /api/todo-item/search?q=keyword`
+
+## Database Migration
+
+```bash
+npm run migrate:up
+```
+
+Create a new timestamped SQL migration:
+
+```bash
+npm run migrate:create -- your-migration-name
+```
 
 ## Prerequisites
 

@@ -1,20 +1,20 @@
-export interface RequestOptions {
+type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   headers?: Record<string, string>;
   query?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   timeoutMs?: number;
-}
+};
 
-export interface HttpResponseError extends Error {
+type HttpResponseError = Error & {
   status: number;
   responseBody: unknown;
-}
+};
 
-export interface WebClient {
-  request<T>(options: RequestOptions): Promise<T>;
-}
+type WebClient = {
+  request: <T>(options: RequestOptions) => Promise<T>;
+};
 
 function httpResponseError(
   status: number,
@@ -98,3 +98,4 @@ function webClient(
 }
 
 export { httpResponseError, isHttpResponseError, webClient };
+export type { HttpResponseError, RequestOptions, WebClient };

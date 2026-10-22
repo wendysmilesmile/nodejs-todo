@@ -1,7 +1,6 @@
 import "./config/env";
 import express, { NextFunction, Request, Response } from "express";
 import { router as todoRouter } from "./controllers/todoController";
-import { todoBffController } from "./controllers/todoBffController";
 import {
   addItem,
   deleteItem,
@@ -10,7 +9,6 @@ import {
   updateItem
 } from "./services/TodoService";
 import { HttpError } from "./types/httpError";
-import { adapters } from "./adapters";
 import { jwtVerify, JWTPayload } from "jose";
 import { TodoItem } from "./models/todoItem";
 
@@ -81,8 +79,6 @@ function app(options: AppOptions = {}) {
   app.use(authMiddleware);
   
   app.use(todoRouter);
-  app.use(todoBffController(adapters));
-
 
   app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     const statusCode = err.statusCode ?? 500;

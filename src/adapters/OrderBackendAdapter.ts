@@ -1,24 +1,20 @@
-import { WebClient } from "../clients/WebClient";
+import { webClient } from "../clients/WebClient";
 
-interface RemoteOrder {
+type RemoteOrder = {
   id: string;
   amount: number;
+};
+
+
+const orderClient = webClient(
+    process.env.ORDER_BACKEND_BASE_URL ?? "http://localhost:9002",
+);
+
+async function listOrders(): Promise<RemoteOrder[]> {
+  return await orderClient.request<RemoteOrder[]>({
+    method: "GET",    
+    path : "/api/orders"
+  });
 }
 
-interface OrderBackendAdapter {
-  listOrders(): Promise<RemoteOrder[]>;
-}
-
-function orderBackendAdapter(webClient: WebClient): OrderBackendAdapter {
-  return {
-    listOrders(): Promise<RemoteOrder[]> {
-      return webClient.request<RemoteOrder[]>({
-        method: "GET",
-        path: "/api/orders"
-      });
-    }
-  };
-}
-
-export { orderBackendAdapter };
-export type { RemoteOrder, OrderBackendAdapter };
+export { listOrders };
