@@ -1,10 +1,10 @@
-import { createApp } from "./app";
+import { app } from "./app";
 import { closePostgresPool } from "./db/postgresPool";
 
-const app = createApp();
+const expressApp = app();
 const port = Number(process.env.PORT ?? 3000);
 
-const server = app.listen(port, () => {
+let server = expressApp.listen(port, () => {
   console.log(`ToDoService listening on port ${port}`);
 });
 
@@ -15,5 +15,11 @@ async function shutdown() {
   });
 }
 
+function start() {
+  return server;
+}
+
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
+export { start, shutdown };

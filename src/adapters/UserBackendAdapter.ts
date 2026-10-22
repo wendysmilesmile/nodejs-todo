@@ -1,15 +1,15 @@
 import { WebClient } from "../clients/WebClient";
 
-export interface RemoteUser {
+interface RemoteUser {
   id: string;
   name: string;
 }
 
-export interface UserBackendAdapter {
+interface UserBackendAdapter {
   listUsers(): Promise<RemoteUser[]>;
 }
 
-export function createUserBackendAdapter(webClient: WebClient): UserBackendAdapter {
+function userBackendAdapter(webClient: WebClient): UserBackendAdapter {
   return {
     listUsers(): Promise<RemoteUser[]> {
       return webClient.request<RemoteUser[]>({
@@ -19,3 +19,6 @@ export function createUserBackendAdapter(webClient: WebClient): UserBackendAdapt
     }
   };
 }
+
+export { userBackendAdapter };
+export type { RemoteUser, UserBackendAdapter };

@@ -13,7 +13,7 @@ function getPoolConfig(): PoolConfig {
   };
 }
 
-export function getPostgresPool(): Pool {
+function getPostgresPool(): Pool {
   if (!pool) {
     pool = new Pool(getPoolConfig());
   }
@@ -21,9 +21,12 @@ export function getPostgresPool(): Pool {
   return pool;
 }
 
-export async function closePostgresPool(): Promise<void> {
+async function closePostgresPool(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = null;
   }
 }
+
+const PostgresPool = getPostgresPool();
+export { closePostgresPool, PostgresPool };

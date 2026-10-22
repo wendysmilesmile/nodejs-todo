@@ -1,17 +1,29 @@
 import "./config/env";
 import express, { NextFunction, Request, Response } from "express";
-import { createTodoController } from "./controllers/todoController";
-import { createTodoBffController } from "./controllers/todoBffController";
-import { ITodoRepository } from "./repositories/interfaces/ITodoRepository";
-import { createPostgresTodoRepository } from "./repositories/PostgresTodoRepository";
-import { createTodoService } from "./services/TodoService";
+import { router as todoRouter } from "./controllers/todoController";
+import { todoBffController } from "./controllers/todoBffController";
+import {
+  addItem,
+  deleteItem,
+  getActiveItems,
+  searchItems,
+  updateItem
+} from "./services/TodoService";
 import { HttpError } from "./types/httpError";
 import { adapters } from "./adapters";
-import { getPostgresPool } from "./db/postgresPool";
 import { jwtVerify, JWTPayload } from "jose";
+import { TodoItem } from "./models/todoItem";
 
-interface CreateAppOptions {
-  todoRepository?: ITodoRepository;
+type TodoServiceFunctions = {
+  searchItems: (query: string) => Promise<TodoItem[]>;
+  getActiveItems: () => Promise<TodoItem[]>;
+  addItem: (title: string) => Promise<TodoItem>;
+  updateItem: (id: number, title: string) => Promise<TodoItem>;
+  deleteItem: (id: number) => Promise<void>;
+};
+
+interface AppOptions {
+  todoService?: TodoServiceFunctions;
 }
 declare global {
   namespace Express {
@@ -21,6 +33,19 @@ declare global {
   }
 }
 const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "dev-secret");
+
+function requestLogger(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const durationMs = Date.now() - start;
+    console.log(
+      `[HTTP] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${durationMs}ms)`
+    );
+  });
+
+  next();
+}
 
 async function authMiddleware(req: Request, res: Response, next: NextFunction) {  
   const auth = req.header("authorization");
@@ -39,16 +64,24 @@ async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export function createApp(options: CreateAppOptions = {}) {
+function app(options: AppOptions = {}) {
   const app = express();
 
-  const repository = options.todoRepository ?? createPostgresTodoRepository(getPostgresPool());
-  const todoService = createTodoService(repository);
+  const todoService = options.todoService ?? {
+    searchItems,
+    getActiveItems,
+    addItem,
+    updateItem,
+    deleteItem
+  };
+
 
   app.use(express.json());
+  app.use(requestLogger);
   app.use(authMiddleware);
-  app.use(createTodoController(todoService));
-  app.use(createTodoBffController(adapters));
+  
+  app.use(todoRouter);
+  app.use(todoBffController(adapters));
 
 
   app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
@@ -60,3 +93,5 @@ export function createApp(options: CreateAppOptions = {}) {
 
   return app;
 }
+
+export { app };

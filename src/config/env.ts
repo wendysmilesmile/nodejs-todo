@@ -1,3 +1,9 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+function loadEnv() {
+	dotenv.config();
+}
+
+loadEnv();
+
+export { loadEnv };

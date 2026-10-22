@@ -1,15 +1,15 @@
 import { WebClient } from "../clients/WebClient";
 
-export interface RemoteOrder {
+interface RemoteOrder {
   id: string;
   amount: number;
 }
 
-export interface OrderBackendAdapter {
+interface OrderBackendAdapter {
   listOrders(): Promise<RemoteOrder[]>;
 }
 
-export function createOrderBackendAdapter(webClient: WebClient): OrderBackendAdapter {
+function orderBackendAdapter(webClient: WebClient): OrderBackendAdapter {
   return {
     listOrders(): Promise<RemoteOrder[]> {
       return webClient.request<RemoteOrder[]>({
@@ -19,3 +19,6 @@ export function createOrderBackendAdapter(webClient: WebClient): OrderBackendAda
     }
   };
 }
+
+export { orderBackendAdapter };
+export type { RemoteOrder, OrderBackendAdapter };

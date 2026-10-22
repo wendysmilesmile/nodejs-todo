@@ -1,17 +1,17 @@
 import { WebClient } from "../clients/WebClient";
 
-export interface RemoteTodoItem {
+interface RemoteTodoItem {
   id: number;
   title: string;
   isDeleted: boolean;
 }
 
-export interface TodoBackendAdapter {
+interface TodoBackendAdapter {
   listTodos(): Promise<RemoteTodoItem[]>;
   createTodo(title: string): Promise<RemoteTodoItem>;
 }
 
-export function createTodoBackendAdapter(webClient: WebClient): TodoBackendAdapter {
+function todoBackendAdapter(webClient: WebClient): TodoBackendAdapter {
   return {
     listTodos(): Promise<RemoteTodoItem[]> {
       return webClient.request<RemoteTodoItem[]>({
@@ -29,3 +29,6 @@ export function createTodoBackendAdapter(webClient: WebClient): TodoBackendAdapt
     }
   };
 }
+
+export { todoBackendAdapter };
+export type { RemoteTodoItem, TodoBackendAdapter };

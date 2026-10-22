@@ -21,8 +21,7 @@ Repository layer:
 
 Service layer:
 
-- `ITodoService` (interface)
-- `TodoService` (concrete service)
+- `TodoService` (exported functions)
 
 ## Project Structure
 
@@ -32,7 +31,6 @@ Service layer:
 - `src/repositories/base/BaseTodoRepository.ts`
 - `src/repositories/PostgresTodoRepository.ts`
 - `src/db/postgresPool.ts`
-- `src/services/interfaces/ITodoService.ts`
 - `src/services/TodoService.ts`
 - `src/clients/WebClient.ts` - unified outbound HTTP client
 - `src/adapters/TodoBackendAdapter.ts` - downstream service adapter example
@@ -100,7 +98,7 @@ npm test
 ## Docker (One-Command Startup)
 
 ```bash
-docker compose -f deploy/docker-compose.yml up --build -d
+docker compose -f docker-compose.yml up --build -d
 ```
 
 This starts both:
@@ -117,7 +115,7 @@ http://localhost:8080
 Stop and remove the container:
 
 ```bash
-docker compose -f deploy/docker-compose.yml down
+docker compose -f docker-compose.yml down
 ```
 
 ## Notes

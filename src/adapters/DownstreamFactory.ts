@@ -1,37 +1,40 @@
-import { createWebClient } from "../clients/WebClient";
-import { createOrderBackendAdapter, OrderBackendAdapter } from "./OrderBackendAdapter";
-import { createTodoBackendAdapter, TodoBackendAdapter } from "./TodoBackendAdapter";
-import { createUserBackendAdapter, UserBackendAdapter } from "./UserBackendAdapter";
+import { webClient } from "../clients/WebClient";
+import { orderBackendAdapter, OrderBackendAdapter } from "./OrderBackendAdapter";
+import { todoBackendAdapter, TodoBackendAdapter } from "./TodoBackendAdapter";
+import { userBackendAdapter, UserBackendAdapter } from "./UserBackendAdapter";
 
-export interface DownstreamAdapters {
+interface DownstreamAdapters {
   todo: TodoBackendAdapter;
   user: UserBackendAdapter;
   order: OrderBackendAdapter;
 }
 
-export function createDownstreamAdapters(): DownstreamAdapters {
+function downstreamAdapters(): DownstreamAdapters {
   const commonHeaders = {
     "x-bff-service": "todoservice-node"
   };
 
-  const todoClient = createWebClient(
+  const todoClient = webClient(
     process.env.TODO_BACKEND_BASE_URL ?? "http://localhost:9000",
     commonHeaders
   );
 
-  const userClient = createWebClient(
+  const userClient = webClient(
     process.env.USER_BACKEND_BASE_URL ?? "http://localhost:9001",
     commonHeaders
   );
 
-  const orderClient = createWebClient(
+  const orderClient = webClient(
     process.env.ORDER_BACKEND_BASE_URL ?? "http://localhost:9002",
     commonHeaders
   );
 
   return {
-    todo: createTodoBackendAdapter(todoClient),
-    user: createUserBackendAdapter(userClient),
-    order: createOrderBackendAdapter(orderClient)
+    todo: todoBackendAdapter(todoClient),
+    user: userBackendAdapter(userClient),
+    order: orderBackendAdapter(orderClient)
   };
 }
+
+export { downstreamAdapters };
+export type { DownstreamAdapters };

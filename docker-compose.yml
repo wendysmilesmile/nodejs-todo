@@ -10,15 +10,15 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   todoservice:
     build:
-      context: ..
+      context: .
       dockerfile: Dockerfile
     container_name: todoservice-node
     depends_on:
       - postgres
+    command: ["sh", "-c", "npm run migrate:up && npm start"]
     ports:
       - "8080:3000"
     environment:

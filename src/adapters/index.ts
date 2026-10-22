@@ -1,6 +1,8 @@
-import { createDownstreamAdapters } from "./DownstreamFactory";
+import { downstreamAdapters } from "./DownstreamFactory";
 
-export const adapters = createDownstreamAdapters();
+const adapters = downstreamAdapters();
 
 // Backward-compatible export for existing callers.
-export const todoBackendAdapter = adapters.todo;
+const todoBackendAdapter = adapters.todo;
+
+export { adapters, todoBackendAdapter };

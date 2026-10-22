@@ -16,7 +16,7 @@ export interface WebClient {
   request<T>(options: RequestOptions): Promise<T>;
 }
 
-export function createHttpResponseError(
+function httpResponseError(
   status: number,
   responseBody: unknown,
   message = `HTTP request failed with status ${status}`
@@ -27,7 +27,7 @@ export function createHttpResponseError(
   return error;
 }
 
-export function isHttpResponseError(error: unknown): error is HttpResponseError {
+function isHttpResponseError(error: unknown): error is HttpResponseError {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -36,7 +36,7 @@ export function isHttpResponseError(error: unknown): error is HttpResponseError 
   );
 }
 
-export function createWebClient(
+function webClient(
   baseUrl: string,
   defaultHeaders: Record<string, string> = {}
 ): WebClient {
@@ -86,7 +86,7 @@ export function createWebClient(
         const responseBody = await parseBody(response);
 
         if (!response.ok) {
-          throw createHttpResponseError(response.status, responseBody);
+          throw httpResponseError(response.status, responseBody);
         }
 
         return responseBody as T;
@@ -96,3 +96,5 @@ export function createWebClient(
     }
   };
 }
+
+export { httpResponseError, isHttpResponseError, webClient };

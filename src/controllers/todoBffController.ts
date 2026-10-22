@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { DownstreamAdapters } from "../adapters/DownstreamFactory";
 import { isHttpResponseError } from "../clients/WebClient";
 
-export function createTodoBffController(adapters: DownstreamAdapters): Router {
+function todoBffController(adapters: DownstreamAdapters): Router {
   const router = Router();
 
   router.get("/api/bff/todo-items", async (req: Request, res: Response, next: NextFunction) => {
@@ -50,3 +50,5 @@ export function createTodoBffController(adapters: DownstreamAdapters): Router {
 
   return router;
 }
+
+export { todoBffController };
