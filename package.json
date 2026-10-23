@@ -26,6 +26,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "jose": "^5.9.6",
+    "pino": "^9.5.0",
     "pg": "^8.13.1"
   },
   "devDependencies": {

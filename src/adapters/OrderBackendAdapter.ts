@@ -1,4 +1,5 @@
 import { webClient } from "../clients/WebClient";
+import { logger } from "../utils/logger";
 
 type RemoteOrder = {
   id: string;
@@ -11,10 +12,18 @@ const orderClient = webClient(
 );
 
 async function listOrders(): Promise<RemoteOrder[]> {
-  return await orderClient.request<RemoteOrder[]>({
-    method: "GET",    
-    path : "/api/orders"
-  });
+  try {
+    return await orderClient.request<RemoteOrder[]>({
+      method: "GET",
+      path: "/api/orders"
+    });
+  } catch (error) {
+    logger.error({
+      path: "/api/orders",
+      err: error
+    }, "OrderBackendAdapter.listOrders failed");
+    throw error;
+  }
 }
 
 export { listOrders };
