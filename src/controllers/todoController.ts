@@ -6,6 +6,7 @@ import {
   searchItems,
   updateItem
 } from "../services/TodoService";
+import { positiveInteger, requiredTrimmedText } from "../validators/todoValidators";
 
 const router = Router();
 
@@ -20,8 +21,7 @@ router.get("/api/todo-items", async (req: Request, res: Response, next: NextFunc
 
 router.post("/api/todo-item", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const title = req.body?.title as string | undefined;
-    const normalizedTitle = (title ?? "").trim();
+    const normalizedTitle = requiredTrimmedText(req.body?.title);
     if (!normalizedTitle) {
       res.status(400).json({ message: "Title is required." });
       return;
@@ -35,11 +35,12 @@ router.post("/api/todo-item", async (req: Request, res: Response, next: NextFunc
 
 router.patch("/api/todo-item/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
+    const id = positiveInteger(req.params.id);
+    if (!id) {
       return res.status(400).json({ message: "Invalid id." });
     }
-    const normalizedTitle = (req.body?.title as string | undefined)?.trim();
+
+    const normalizedTitle = requiredTrimmedText(req.body?.title);
     if (!normalizedTitle) {
       return res.status(400).json({ message: "Title is required." });
     }
@@ -54,7 +55,7 @@ router.get("/api/todo-item/search", async (req: Request, res: Response, next: Ne
   try {
     // const user = req.user;
     // const userId = user?.email ?? "anonymous";
-    const query = req.query?.q as string | undefined;
+    const query = requiredTrimmedText(req.query?.q);
     if (!query) {
       return res.status(400).json({ message: "Query parameter 'q' is required." });
     }
@@ -67,8 +68,8 @@ router.get("/api/todo-item/search", async (req: Request, res: Response, next: Ne
 
 router.delete("/api/todo-item/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
+    const id = positiveInteger(req.params.id);
+    if (!id) {
       return res.status(400).json({ message: "Invalid id." });
     }
     await deleteItem(id);
