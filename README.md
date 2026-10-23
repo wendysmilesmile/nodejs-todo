@@ -103,6 +103,18 @@ http://localhost:3000
 npm test
 ```
 
+## Lint
+
+```bash
+npm run lint
+```
+
+Auto-fix:
+
+```bash
+npm run lint:fix
+```
+
 ## Docker (One-Command Startup)
 
 ```bash

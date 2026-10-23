@@ -4,7 +4,7 @@ import { closePostgresPool } from "./db/postgresPool";
 const expressApp = app();
 const port = Number(process.env.PORT ?? 3000);
 
-let server = expressApp.listen(port, () => {
+const server = expressApp.listen(port, () => {
   console.log(`ToDoService listening on port ${port}`);
 });
 

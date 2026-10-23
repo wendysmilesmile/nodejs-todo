@@ -1,5 +1,4 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { TodoItem } from "../models/todoItem";
 import {
   addItem,
   deleteItem,
