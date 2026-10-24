@@ -4,6 +4,7 @@ import { router as todoRouter } from "./controllers/todoController";
 import { HttpError } from "./types/httpError";
 import { jwtVerify, JWTPayload } from "jose";
 import { dataRouter } from "./controllers/dataController";
+import { logger } from "./utils/logger";
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -18,8 +19,14 @@ function requestLogger(req: Request, res: Response, next: NextFunction) {
 
   res.on("finish", () => {
     const durationMs = Date.now() - start;
-    console.log(
-      `[HTTP] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${durationMs}ms)`,
+    logger.info(
+      {
+        method: req.method,
+        url: req.originalUrl,
+        statusCode: res.statusCode,
+        durationMs,
+      },
+      "HTTP request completed",
     );
   });
 
@@ -59,7 +66,15 @@ function app() {
       const statusCode = err.statusCode ?? 500;
       const message =
         statusCode === 500 ? "Internal Server Error" : err.message;
-      console.error("日志记录：", err.stack); // 记录错误日志
+      logger.error(
+        {
+          method: req.method,
+          url: req.originalUrl,
+          statusCode,
+          err,
+        },
+        "Request failed",
+      );
       res.status(statusCode).json({ message });
     },
   );
