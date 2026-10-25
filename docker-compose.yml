@@ -18,7 +18,7 @@ services:
     container_name: todoservice-node
     depends_on:
       - postgres
-    command: ["sh", "-c", "npm run migrate:up && npm start"]
+    command: ["sh", "-c", "npm run migrate:up && node dist/src/server.js"]
     ports:
       - "8080:3000"
     environment:

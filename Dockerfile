@@ -16,6 +16,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/database.json ./database.json
+COPY --from=builder /app/migrations ./migrations
 
 ENV NODE_ENV=production
 ENV PORT=3000
